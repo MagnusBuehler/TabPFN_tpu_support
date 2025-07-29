@@ -202,6 +202,16 @@ def infer_device_and_type(device: str | torch.device | None) -> torch.device:
     Returns:
         The inferred device
     """
+
+    def _supports_tpu() -> bool:
+        """Check if TPU support is available."""
+        try:
+            import torch_xla  # noqa: F401
+
+            return True
+        except ImportError:
+            return False
+
     exclude_devices = {
         d.strip()
         for d in os.getenv("TABPFN_EXCLUDE_DEVICES", "").split(",")
@@ -214,6 +224,8 @@ def infer_device_and_type(device: str | torch.device | None) -> torch.device:
             if torch.cuda.is_available() and "cuda" not in exclude_devices
             else "mps"
             if torch.backends.mps.is_available() and "mps" not in exclude_devices
+            else "tpu"
+            if _supports_tpu() and "tpu" not in exclude_devices
             else "cpu"
         )
         return torch.device(device_type_)
