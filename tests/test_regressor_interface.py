@@ -22,7 +22,7 @@ from torch import nn
 from tabpfn import TabPFNRegressor
 from tabpfn.base import RegressorModelSpecs, initialize_tabpfn_model
 from tabpfn.preprocessing import PreprocessorConfig
-from tabpfn.utils import infer_device_and_type
+from tabpfn.utils import infer_device_and_type, xla_is_available
 
 from .utils import check_cpu_float16_support
 
@@ -35,6 +35,8 @@ if torch.cuda.is_available() and "cuda" not in exclude_devices:
     devices.append("cuda")
 if torch.backends.mps.is_available() and "mps" not in exclude_devices:
     devices.append("mps")
+if xla_is_available() and "xla" not in exclude_devices:
+    devices.append("xla")
 
 # --- Environment-Aware Check for CPU Float16 Support ---
 is_cpu_float16_supported = check_cpu_float16_support()
@@ -82,7 +84,7 @@ def X_y() -> tuple[np.ndarray, np.ndarray]:
 )
 def test_regressor(
     n_estimators: int,
-    device: Literal["cuda", "mps", "cpu"],
+    device: Literal["cuda", "mps", "xla", "cpu"],
     feature_shift_decoder: Literal["shuffle", "rotate"],
     fit_mode: Literal["low_memory", "fit_preprocessors", "fit_with_cache"],
     inference_precision: torch.types._dtype | Literal["autocast", "auto"],
