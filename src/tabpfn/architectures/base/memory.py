@@ -63,9 +63,9 @@ def support_save_peak_mem_factor(method: MethodType) -> Callable:
         **kwargs: Any,
     ) -> torch.Tensor:
         assert isinstance(self, torch.nn.Module)
-        assert save_peak_mem_factor is None or allow_inplace, (
-            "The parameter save_peak_mem_factor only supported with 'allow_inplace' set."
-        )
+        assert (
+            save_peak_mem_factor is None or allow_inplace
+        ), "save_peak_mem_factor is only supported with 'allow_inplace' set."
         assert isinstance(x, torch.Tensor)
 
         tensor_inputs = list(tuple(self.parameters()) + tuple(args))
@@ -348,7 +348,7 @@ class MemoryUsageEstimator:
             # need to import torch_xla to access memory info, which is an optional
             # dependency.
             try:
-                import torch_xla.core.xla_model as xm  # noqa: PLC0415
+                import torch_xla.core.xla_model as xm
             except ImportError as e:
                 raise ImportError(
                     "torch_xla is required to access XLA device memory info. "
