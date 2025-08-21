@@ -65,7 +65,7 @@ def support_save_peak_mem_factor(method: MethodType) -> Callable:
         assert isinstance(self, torch.nn.Module)
         assert (
             save_peak_mem_factor is None or allow_inplace
-        ), "save_peak_mem_factor is only supported with 'allow_inplace' set."
+        ), "The parameter save_peak_mem_factor only supported with 'allow_inplace' set."
         assert isinstance(x, torch.Tensor)
 
         tensor_inputs = list(tuple(self.parameters()) + tuple(args))
