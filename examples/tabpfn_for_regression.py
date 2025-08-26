@@ -20,9 +20,41 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=42,
 )
 
+
+
+# ---- debug start 
+# bug description:
+# Classifier was loading on gpu even by passing device="cpu" to load_fitted_tabpfn_model.
+# it loads on cpu by passing arg device=torch.device("cpu")
+# but Regressor seems to ignore the argument and attempts to load on cuda
+
+from tabpfn.model.loading import save_fitted_tabpfn_model, load_fitted_tabpfn_model
+import torch
+from tabpfn import TabPFNClassifier
+from torch import from_numpy
+
+
 # Initialize a regressor
 reg = TabPFNRegressor()
+cls = TabPFNClassifier()
+
 reg.fit(X_train, y_train)
+
+
+X_train = torch.randn_like(from_numpy(X_train)).cpu()
+y_train = torch.randint(low=0, high=2, size=list(y_train.shape)).cpu()
+
+cls.fit(X_train, y_train)
+
+save_fitted_tabpfn_model(estimator= reg, path="reg_model_path.tabpfn_fit")
+save_fitted_tabpfn_model(estimator= cls, path="cls_model_path.tabpfn_fit")
+
+for device in ["cpu", torch.device("cpu")]:
+    loaded_reg = load_fitted_tabpfn_model(path="reg_model_path.tabpfn_fit", device=device)
+    loaded_cls = load_fitted_tabpfn_model(path="cls_model_path.tabpfn_fit", device=device)
+
+print("debug checkpoint")
+# ----- debug end 
 
 # Predict a point estimate (using the mean)
 predictions = reg.predict(X_test)
