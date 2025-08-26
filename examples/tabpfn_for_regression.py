@@ -50,6 +50,7 @@ save_fitted_tabpfn_model(estimator= reg, path="reg_model_path.tabpfn_fit")
 save_fitted_tabpfn_model(estimator= cls, path="cls_model_path.tabpfn_fit")
 
 for device in ["cpu", torch.device("cpu")]:
+    # Issue 416 "Code to Reproduce": reg = load_fitted_tabpfn_model(os.path.join(self.model_dir, self.filename_reg), device=torch.device("cpu"))
     loaded_reg = load_fitted_tabpfn_model(path="reg_model_path.tabpfn_fit", device=device)
     loaded_cls = load_fitted_tabpfn_model(path="cls_model_path.tabpfn_fit", device=device)
 
